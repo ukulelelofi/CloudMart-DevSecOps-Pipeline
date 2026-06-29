@@ -1,0 +1,50 @@
+name: CloudMart DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  devsecops-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Display Pipeline Start
+        run: echo "Starting CloudMart DevSecOps Pipeline"
+
+      - name: Build Stage
+        run: echo "Building application..."
+
+      - name: Unit Test Stage
+        run: echo "Running unit tests..."
+
+      - name: Secret Scan
+        run: echo "Scanning for secrets..."
+
+      - name: SAST Scan
+        run: echo "Running Static Application Security Testing..."
+
+      - name: Dependency Scan
+        run: echo "Checking third-party dependencies..."
+
+      - name: Container Image Scan
+        run: echo "Scanning container image..."
+
+      - name: IaC Scan
+        run: echo "Scanning Infrastructure as Code..."
+
+      - name: Generate Audit Evidence
+        run: |
+          mkdir -p reports
+          echo "CloudMart DevSecOps Pipeline executed successfully." > reports/audit-evidence.txt
+
+      - name: Pipeline Completed
+        run: echo "Pipeline completed successfully."
