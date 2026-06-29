@@ -1,6 +1,8 @@
 print("Welcome to CloudMart Solutions!")
 
-API_KEY = "1234567890abcdef"
+import os
+
+API_KEY = os.getenv("API_KEY")
 
 def calculate_total(price, quantity):
     return price * quantity
