@@ -34,8 +34,13 @@ jobs:
       - name: SAST Scan
         run: echo "Running Static Application Security Testing..."
 
-      - name: Dependency Scan
-        run: echo "Checking third-party dependencies..."
+      - name: Run Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
 
       - name: Container Image Scan
         run: echo "Scanning container image..."
