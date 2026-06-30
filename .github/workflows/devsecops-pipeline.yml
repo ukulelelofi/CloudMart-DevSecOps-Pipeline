@@ -81,5 +81,21 @@ jobs:
           name: cloudmart-audit-evidence
           path: reports/audit-evidence.txt
 
+      - name: Release Gate
+        run: |
+          echo "========================================"
+          echo "      CloudMart Release Gate"
+          echo "========================================"
+          echo "✓ Build completed"
+          echo "✓ Unit tests passed"
+          echo "✓ Secret scan passed"
+          echo "✓ SAST (CodeQL) completed"
+          echo "✓ Vulnerability scan (Trivy) completed"
+          echo "✓ Audit evidence generated"
+          echo ""
+          echo "Status: READY FOR UAT APPROVAL"
+          echo "Production deployment requires manual approval."
+          echo "========================================"
+
       - name: Pipeline Completed
         run: echo "Pipeline completed successfully."
