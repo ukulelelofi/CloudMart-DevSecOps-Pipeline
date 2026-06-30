@@ -55,4 +55,11 @@ M --> N[Ready for UAT / Production Approval]
 
 This pipeline demonstrates enterprise DevSecOps practices by ensuring:
 
-- Security
+This pipeline demonstrates enterprise DevSecOps practices by ensuring:
+
+- Security testing is automated before deployment.
+- Source code is scanned for exposed secrets using Gitleaks.
+- Static Application Security Testing (SAST) is performed using CodeQL.
+- Vulnerability scanning is performed using Trivy.
+- Audit evidence is generated and stored as a build artifact.
+- Release Gate validation ensures all required security checks have completed before deployment approval.
