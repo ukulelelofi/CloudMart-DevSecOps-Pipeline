@@ -1,65 +1,144 @@
-# CloudMart-DevSecOps-Pipeline
+# CloudMart DevSecOps Pipeline
 
-DevSecOps Capstone Project demonstrating a secure CI/CD pipeline using GitHub Actions with automated testing, security scanning, governance, and compliance.
+CloudMart is a sample e-commerce web application used to demonstrate an enterprise DevSecOps CI/CD pipeline built with GitHub Actions.
+
+The project automates application testing, security scanning, containerization, governance, and release validation before deployment, following modern DevSecOps best practices.
+
+# Project Overview
+
+This project demonstrates how modern DevSecOps practices can secure the Software Development Life Cycle (SDLC).
+
+Every code change automatically triggers the following automated DevSecOps pipeline:
+
+- Build
+- Unit Testing
+- Secret Detection
+- Static Code Analysis
+- Vulnerability Scanning
+- Docker Image Build
+- Container Security Scan
+- Audit Evidence Generation
+- Release Gate Validation
+
+# Technologies
+
+| Category | Technology |
+|----------|------------|
+| Programming Language | Python |
+| Web Framework | Flask |
+| Version Control | GitHub |
+| CI/CD Platform | GitHub Actions |
+| Unit Testing | Pytest |
+| Secret Detection | Gitleaks |
+| Static Application Security Testing (SAST) | CodeQL |
+| Vulnerability Scanning | Trivy |
+| Containerization | Docker |
 
 ---
 
-## 🚀 DevSecOps Pipeline Architecture
+# DevSecOps Pipeline Architecture
 
 ```mermaid
 flowchart TD
 
-A[Developer Push / Pull Request] --> B[GitHub Repository]
+A[Developer Feature Branch] --> B[Pull Request]
 
-B --> C[GitHub Actions]
+B --> C[GitHub Repository]
 
-C --> D[Checkout Repository]
+C --> D[GitHub Actions]
 
-D --> E[Build Stage]
+D --> E[Checkout Source Code]
 
 E --> F[Install Dependencies]
 
-F --> G[Run Unit Tests - Pytest]
+F --> G[Run Pytest]
 
-G --> H[Secret Scan - Gitleaks]
+G --> H[Gitleaks Secret Scan]
 
-H --> I[SAST - CodeQL]
+H --> I[CodeQL SAST]
 
-I --> J[Vulnerability Scan - Trivy]
+I --> J[Trivy Filesystem Scan]
 
-J --> K[Generate Audit Evidence]
+J --> K[Docker Image Build]
 
-K --> L[Upload Audit Evidence Artifact]
+K --> L[Trivy Container Image Scan]
 
-L --> M[Release Gate Validation]
+L --> M[Generate Audit Evidence]
 
-M --> N[Ready for UAT / Production Approval]
+M --> N[Upload Artifact]
+
+N --> O[Release Gate]
+
+O --> P[Manual UAT Approval]
+
+P --> Q[Production Deployment]
 ```
 
+
 ---
 
-## Security Controls
+# Security Controls
 
 - ✅ GitHub Actions CI Pipeline
-- ✅ Pytest Unit Testing
-- ✅ Gitleaks Secret Detection
-- ✅ CodeQL Static Application Security Testing (SAST)
-- ✅ Trivy Vulnerability Scanning
-- ✅ Audit Evidence Generation
-- ✅ Artifact Upload
+- ✅ Automated Unit Testing (Pytest)
+- ✅ Secret Detection (Gitleaks)
+- ✅ Static Application Security Testing (CodeQL)
+- ✅ Filesystem Vulnerability Scan (Trivy)
+- ✅ Docker Image Build
+- ✅ Container Image Vulnerability Scan (Trivy)
+- ✅ Audit Evidence Artifact
 - ✅ Release Gate Validation
+
+# Governance & Compliance
+
+CloudMart demonstrates enterprise DevSecOps governance by ensuring:
+
+- Security testing is executed automatically.
+- Secrets are detected before deployment.
+- Source code is analysed using CodeQL.
+- Filesystem and container vulnerabilities are scanned using Trivy.
+- Docker images are built consistently.
+- Audit evidence is generated for compliance.
+- Release Gates verify that all quality, testing, and security checks have successfully completed before UAT approval.
+
+# Docker
+
+CloudMart is containerized using Docker to ensure a consistent runtime environment across development, testing, and production.
+
+# Build Image
+
+```bash
+docker build -t cloudmart .
+docker run -p 5000:5000 cloudmart
+
 
 ---
 
-## Governance & Compliance
+# 8. Add Pipeline Status (my favourite)
 
-This pipeline demonstrates enterprise DevSecOps practices by ensuring:
+```markdown
+# Pipeline Status
 
-This pipeline demonstrates enterprise DevSecOps practices by ensuring:
+The CloudMart DevSecOps pipeline successfully performs:
 
-- Security testing is automated before deployment.
-- Source code is scanned for exposed secrets using Gitleaks.
-- Static Application Security Testing (SAST) is performed using CodeQL.
-- Vulnerability scanning is performed using Trivy.
-- Audit evidence is generated and stored as a build artifact.
-- Release Gate validation ensures all required security checks have completed before deployment approval.
+- Build
+- Automated Unit Testing
+- Secret Detection
+- Static Code Analysis
+- Filesystem Vulnerability Scanning
+- Docker Image Build
+- Container Image Vulnerability Scanning
+- Audit Evidence Generation
+- Release Gate Validation
+
+Status: **Ready for UAT Approval**
+
+# Future Enhancements
+
+- Feature Branch workflow
+- Pull Request approval
+- Branch Protection Rules
+- Terraform Infrastructure as Code
+- HashiCorp Terraform Validate
+- Azure Deployment
+- Manual Production Approval
