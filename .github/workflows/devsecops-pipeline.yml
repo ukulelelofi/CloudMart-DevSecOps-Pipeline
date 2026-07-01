@@ -64,8 +64,16 @@ jobs:
           format: 'table'
           severity: 'HIGH,CRITICAL'
 
-      - name: Container Image Scan
-        run: echo "Scanning container image..."
+      - name: Build Docker Image
+        run: docker build -t cloudmart:${{ github.sha }} .
+
+      - name: Run Trivy Container Image Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'cloudmart:${{ github.sha }}'
+          format: 'table'
+          severity: 'HIGH,CRITICAL'
+          exit-code: '0'
 
       - name: IaC Scan
         run: echo "Scanning Infrastructure as Code..."
@@ -91,6 +99,8 @@ jobs:
           echo "✓ Secret scan passed"
           echo "✓ SAST (CodeQL) completed"
           echo "✓ Vulnerability scan (Trivy) completed"
+          echo "✓ Docker image built"
+          echo "✓ Container image scan completed"
           echo "✓ Audit evidence generated"
           echo ""
           echo "Status: READY FOR UAT APPROVAL"
