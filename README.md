@@ -109,14 +109,18 @@ CloudMart is containerized using Docker to ensure a consistent runtime environme
 
 ```bash
 docker build -t cloudmart .
-docker run -p 5000:5000 cloudmart
+```
 
+# Run Container
+
+```bash
+docker run -p 5000:5000 cloudmart
+```
+
+The application is exposed on port **5000**.
 
 ---
 
-# 8. Add Pipeline Status (my favourite)
-
-```markdown
 # Pipeline Status
 
 The CloudMart DevSecOps pipeline successfully performs:
@@ -132,6 +136,8 @@ The CloudMart DevSecOps pipeline successfully performs:
 - Release Gate Validation
 
 Status: **Ready for UAT Approval**
+
+---
 
 # Future Enhancements
 
