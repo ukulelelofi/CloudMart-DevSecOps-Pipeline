@@ -1,5 +1,11 @@
 # CloudMart DevSecOps Pipeline
 
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Flask](https://img.shields.io/badge/Flask-Web_App-black)
+![Docker](https://img.shields.io/badge/Docker-Container-blue)
+![GitHub Actions](https://img.shields.io/badge/CI-GitHub_Actions-success)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 CloudMart is a sample e-commerce web application used to demonstrate an enterprise DevSecOps CI/CD pipeline built with GitHub Actions.
 
 The project automates application testing, security scanning, containerization, governance, and release validation before deployment, following modern DevSecOps best practices.
@@ -26,7 +32,8 @@ Every code change automatically triggers the following automated DevSecOps pipel
 |----------|------------|
 | Programming Language | Python |
 | Web Framework | Flask |
-| Version Control | GitHub |
+| Version Control | Git |
+| Repository | GitHub |
 | CI/CD Platform | GitHub Actions |
 | Unit Testing | Pytest |
 | Secret Detection | Gitleaks |
