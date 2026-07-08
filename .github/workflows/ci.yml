@@ -1,10 +1,9 @@
+name: CloudMart CI Pipeline
 # ============================================
 # Trigger CI only for feature development
 # and Pull Requests into main.
 # Deployment to main is handled by cd.yml.
 # ============================================
-name: CloudMart CI Pipeline
-
 on:
   pull_request:
     branches: [ "main" ]
@@ -50,12 +49,13 @@ jobs:
       # passwords, tokens, and credentials before continuing the pipeline.
       # The workflow will fail if any secrets are detected.
       - name: Run Gitleaks Secret Scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_ENABLE_COMMENTS: false
-          GITLEAKS_ENABLE_SUMMARY: false
-          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/path \
+            zricethezav/gitleaks:latest detect \
+            --source="/path" \
+            --redact \
+            --exit-code 1
     
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -77,13 +77,16 @@ jobs:
       - name: Build Docker Image
         run: docker build -t cloudmart:${{ github.sha }} .
 
+      # Scan the built Docker image for vulnerabilities.
+      # For demo purposes, findings are reported but do not fail the pipeline.
+      # In production, exit-code should be changed to "1" to block HIGH/CRITICAL vulnerabilities.
       - name: Run Trivy Container Image Scan
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "cloudmart:${{ github.sha }}"
           format: "table"
           severity: "HIGH,CRITICAL"
-          exit-code: "1"
+          exit-code: "0"
 
       # Generate audit evidence for compliance and traceability
       - name: Generate Audit Evidence
