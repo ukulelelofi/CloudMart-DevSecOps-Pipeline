@@ -1,0 +1,51 @@
+name: CloudMart CD Pipeline
+
+# CD runs only after code is merged into main.
+# This keeps validation and deployment separated.
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-dev:
+    name: Deploy to Dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Dev
+        run: echo "Deploying CloudMart to Dev environment..."
+
+      - name: Dev Smoke Test
+        run: echo "Running Dev smoke test..."
+
+  deploy-uat:
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    needs: deploy-dev
+    environment: uat
+
+    steps:
+      - name: Deploy to UAT
+        run: echo "Deploying CloudMart to UAT after manual approval..."
+
+      - name: UAT Smoke Test
+        run: echo "Running UAT smoke test..."
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: deploy-uat
+    environment: production
+
+    steps:
+      - name: Deploy to Production
+        run: echo "Deploying CloudMart to Production after approval..."
+
+      - name: Production Validation
+        run: echo "Validating Production deployment..."
