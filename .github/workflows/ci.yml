@@ -46,13 +46,17 @@ jobs:
         run: |
           PYTHONPATH=. pytest
 
+      # Scan the repository for hardcoded secrets such as API keys,
+      # passwords, tokens, and credentials before continuing the pipeline.
+      # The workflow will fail if any secrets are detected.
       - name: Run Gitleaks Secret Scan
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          args: detect --source . --redact -v --exit-code=2 --report-format=sarif --report-path=results.sarif
-
+          GITLEAKS_ENABLE_COMMENTS: false
+          GITLEAKS_ENABLE_SUMMARY: false
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false
+    
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
