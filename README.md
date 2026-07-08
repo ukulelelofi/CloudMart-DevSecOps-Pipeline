@@ -78,7 +78,7 @@ Every source code change automatically triggers an enterprise DevSecOps pipeline
 # CloudMart Enterprise DevSecOps Architecture
 
 ```
-                                 CloudMart DevSecOps Platform
+                         CloudMart DevSecOps Platform
 
         ┌─────────────────────────────────────────────────────────────┐
         │                        Developer                            │
@@ -318,50 +318,6 @@ The following KPIs are used to measure pipeline quality and operational performa
 | Production Deployment Success | 100% |
 
 ---
-
-And this one for **Governance + KPI Lead**:
-
-```markdown
-#  Governance, Compliance & KPI Model
-
-```text
-                 ┌──────────────────────┐
-                 │  Governance Lead      │
-                 │  Policy & Approval    │
-                 └──────────┬───────────┘
-                            │
-                            ▼
-┌──────────────┐    ┌──────────────────────┐    ┌──────────────┐
-│ Developer    │───▶│ DevSecOps Pipeline   │───▶│ KPI Lead      │
-│ Code Change  │    │ CI/CD Automation     │    │ Metrics       │
-└──────────────┘    └──────────┬───────────┘    └──────────────┘
-                            │
-                            ▼
-                 ┌──────────────────────┐
-                 │ Compliance Evidence  │
-                 │ Artifacts + Trace    │
-                 └──────────────────────┘
-
-#  Repository Structure
-
-```text
-CloudMart-DevSecOps-Pipeline
-│
-├── .github
-│   └── workflows
-│       ├── ci.yml
-│       └── cd.yml
-│
-├── app
-├── docs
-├── src
-├── tests
-│
-├── Dockerfile
-├── requirements.txt
-├── README.md
-└── LICENSE
-```
 
 ---
 
