@@ -1,15 +1,29 @@
 name: CloudMart CD Pipeline
 
-# CD runs only after code is merged into main.
-# This keeps validation and deployment separated.
+# ============================================
+# Continuous Delivery (CD) Pipeline
+# This workflow runs only after code is merged
+# into the main branch.
+#
+# CI validates code quality and security.
+# CD is responsible for deployment.
+# ============================================
 on:
   push:
     branches: [ "main" ]
 
+# Read-only permission is sufficient because
+# this workflow only deploys application artifacts.
 permissions:
   contents: read
 
 jobs:
+
+  # ============================================
+  # Stage 1 - Deploy to Development
+  # Deploy the validated application and perform
+  # basic smoke testing.
+  # ============================================
   deploy-dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
@@ -24,6 +38,11 @@ jobs:
       - name: Dev Smoke Test
         run: echo "Running Dev smoke test..."
 
+  # ============================================
+  # Stage 2 - Deploy to UAT
+  # This stage requires manual approval using
+  # GitHub Environments before deployment.
+  # ============================================
   deploy-uat:
     name: Deploy to UAT
     runs-on: ubuntu-latest
@@ -37,6 +56,11 @@ jobs:
       - name: UAT Smoke Test
         run: echo "Running UAT smoke test..."
 
+  # ============================================
+  # Stage 3 - Deploy to Production
+  # Production deployment requires a second
+  # manual approval before release.
+  # ============================================
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
@@ -49,3 +73,4 @@ jobs:
 
       - name: Production Validation
         run: echo "Validating Production deployment..."
+
