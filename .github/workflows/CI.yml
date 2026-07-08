@@ -8,22 +8,13 @@ on:
       - "feature/**"
       - "hotfix/**"
 
-on:
-  push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
-
-permissions: 
+permissions:
   security-events: write
   actions: read
   contents: read
 
 jobs:
-  devsecops-pipeline:
+  ci-validation:
     runs-on: ubuntu-latest
 
     steps:
@@ -31,10 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Display Pipeline Start
-        run: echo "Starting CloudMart DevSecOps Pipeline"
-
-      - name: Build Stage
-        run: echo "Building application..."
+        run: echo "Starting CloudMart CI Pipeline"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -46,7 +34,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Pytest
+      - name: Run Unit Tests
         run: |
           PYTHONPATH=. pytest
 
@@ -64,15 +52,15 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-     
 
       - name: Run Trivy Filesystem Scan
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          severity: 'HIGH,CRITICAL'
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          exit-code: "1"
 
       - name: Build Docker Image
         run: docker build -t cloudmart:${{ github.sha }} .
@@ -80,42 +68,37 @@ jobs:
       - name: Run Trivy Container Image Scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'cloudmart:${{ github.sha }}'
-          format: 'table'
-          severity: 'HIGH,CRITICAL'
-          exit-code: '0'
-
-      - name: IaC Scan
-        run: echo "Scanning Infrastructure as Code..."
+          image-ref: "cloudmart:${{ github.sha }}"
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          exit-code: "1"
 
       - name: Generate Audit Evidence
         run: |
           mkdir -p reports
-          echo "CloudMart DevSecOps Pipeline executed successfully." > reports/audit-evidence.txt
+          echo "CloudMart CI Pipeline executed successfully." > reports/audit-evidence.txt
+          echo "Commit SHA: ${{ github.sha }}" >> reports/audit-evidence.txt
+          echo "Branch: ${{ github.ref_name }}" >> reports/audit-evidence.txt
 
       - name: Upload Audit Evidence Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cloudmart-audit-evidence
+          name: cloudmart-ci-audit-evidence
           path: reports/audit-evidence.txt
 
-      - name: Release Gate
+      - name: CI Release Gate
         run: |
           echo "========================================"
-          echo "      CloudMart Release Gate"
+          echo "      CloudMart CI Release Gate"
           echo "========================================"
-          echo "✓ Build completed"
           echo "✓ Unit tests passed"
           echo "✓ Secret scan passed"
-          echo "✓ SAST (CodeQL) completed"
-          echo "✓ Vulnerability scan (Trivy) completed"
+          echo "✓ SAST completed"
+          echo "✓ Dependency scan completed"
           echo "✓ Docker image built"
-          echo "✓ Container image scan completed"
+          echo "✓ Container scan completed"
           echo "✓ Audit evidence generated"
           echo ""
-          echo "Status: READY FOR UAT APPROVAL"
-          echo "Production deployment requires manual approval."
+          echo "Status: CI PASSED - READY FOR PR REVIEW"
+          echo "Deployment is handled separately by CD pipeline."
           echo "========================================"
-
-      - name: Pipeline Completed
-        run: echo "Pipeline completed successfully."
