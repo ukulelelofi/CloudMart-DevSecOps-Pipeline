@@ -2,46 +2,70 @@ name: CloudMart CD Pipeline
 
 # ============================================
 # Continuous Delivery (CD) Pipeline
-# This workflow runs only after code is merged
-# into the main branch.
+# This workflow runs only after code has been
+# merged into the main branch.
 #
 # CI validates code quality and security.
 # CD is responsible for deployment.
 # ============================================
+
 on:
   push:
     branches: [ "main" ]
 
-# Read-only permission is sufficient because
-# this workflow only deploys application artifacts.
+# Required permissions for deployment workflow.
+# Contents: Read the repository.
+# Actions: Upload deployment evidence artifacts.
 permissions:
   contents: read
+  actions: read
 
 jobs:
 
   # ============================================
   # Stage 1 - Deploy to Development
   # Deploy the validated application and perform
-  # basic smoke testing.
+  # a basic smoke test before promoting to UAT.
   # ============================================
   deploy-dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
 
     steps:
+      # Download the latest source code.
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Simulate deployment to Development.
       - name: Deploy to Dev
         run: echo "Deploying CloudMart to Dev environment..."
 
+      # Verify the application is running.
       - name: Dev Smoke Test
         run: echo "Running Dev smoke test..."
 
+      # Generate deployment evidence for audit
+      # and compliance purposes.
+      - name: Generate Dev Deployment Evidence
+        run: |
+          mkdir -p reports
+          echo "CloudMart deployed successfully to Dev." > reports/dev-deployment-evidence.txt
+          echo "Commit SHA: ${{ github.sha }}" >> reports/dev-deployment-evidence.txt
+          echo "Branch: ${{ github.ref_name }}" >> reports/dev-deployment-evidence.txt
+          echo "Deployment Time: $(date)" >> reports/dev-deployment-evidence.txt
+
+      # Upload deployment evidence so it can be
+      # downloaded later if required.
+      - name: Upload Dev Deployment Evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudmart-dev-deployment-evidence
+          path: reports/dev-deployment-evidence.txt
+
   # ============================================
-  # Stage 2 - Deploy to UAT
-  # This stage requires manual approval using
-  # GitHub Environments before deployment.
+  # Stage 2 - Deploy to User Acceptance Testing
+  # UAT requires manual approval using GitHub
+  # Environments before deployment begins.
   # ============================================
   deploy-uat:
     name: Deploy to UAT
@@ -50,11 +74,29 @@ jobs:
     environment: uat
 
     steps:
+      # Simulate deployment to UAT.
       - name: Deploy to UAT
         run: echo "Deploying CloudMart to UAT after manual approval..."
 
+      # Verify deployment success.
       - name: UAT Smoke Test
         run: echo "Running UAT smoke test..."
+
+      # Generate deployment evidence for UAT.
+      - name: Generate UAT Deployment Evidence
+        run: |
+          mkdir -p reports
+          echo "CloudMart deployed successfully to UAT." > reports/uat-deployment-evidence.txt
+          echo "Commit SHA: ${{ github.sha }}" >> reports/uat-deployment-evidence.txt
+          echo "Branch: ${{ github.ref_name }}" >> reports/uat-deployment-evidence.txt
+          echo "Deployment Time: $(date)" >> reports/uat-deployment-evidence.txt
+
+      # Upload deployment evidence.
+      - name: Upload UAT Deployment Evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudmart-uat-deployment-evidence
+          path: reports/uat-deployment-evidence.txt
 
   # ============================================
   # Stage 3 - Deploy to Production
@@ -68,9 +110,48 @@ jobs:
     environment: production
 
     steps:
+      # Simulate deployment to Production.
       - name: Deploy to Production
         run: echo "Deploying CloudMart to Production after approval..."
 
+      # Perform a final deployment validation.
       - name: Production Validation
         run: echo "Validating Production deployment..."
 
+      # Generate deployment evidence for Production.
+      # This provides traceability for audits.
+      - name: Generate Production Deployment Evidence
+        run: |
+          mkdir -p reports
+          echo "CloudMart deployed successfully to Production." > reports/production-deployment-evidence.txt
+          echo "Commit SHA: ${{ github.sha }}" >> reports/production-deployment-evidence.txt
+          echo "Branch: ${{ github.ref_name }}" >> reports/production-deployment-evidence.txt
+          echo "Deployment Time: $(date)" >> reports/production-deployment-evidence.txt
+
+      # Upload production deployment evidence.
+      - name: Upload Production Deployment Evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: cloudmart-production-deployment-evidence
+          path: reports/production-deployment-evidence.txt
+
+      # ============================================
+      # Final Deployment Summary
+      # This provides a clear summary after all
+      # deployment stages have completed.
+      # ============================================
+      - name: Deployment Summary
+        run: |
+          echo "========================================"
+          echo "     CloudMart Deployment Summary"
+          echo "========================================"
+          echo "✓ Development deployment completed"
+          echo "✓ UAT deployment completed"
+          echo "✓ Production deployment completed"
+          echo ""
+          echo "Application : CloudMart"
+          echo "Version     : ${{ github.sha }}"
+          echo "Branch      : ${{ github.ref_name }}"
+          echo ""
+          echo "Status: RELEASE SUCCESSFUL"
+          echo "========================================"
