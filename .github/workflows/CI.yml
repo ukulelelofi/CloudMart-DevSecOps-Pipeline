@@ -3,15 +3,6 @@
 # and Pull Requests into main.
 # Deployment to main is handled by cd.yml.
 # ============================================
-on:
-  pull_request:
-    branches: [ "main" ]
-
-  push:
-    branches:
-      - "feature/**"
-      - "hotfix/**"
-
 name: CloudMart CI Pipeline
 
 on:
@@ -90,7 +81,7 @@ jobs:
           severity: "HIGH,CRITICAL"
           exit-code: "1"
 
-# Generate audit evidence for compliance and traceability
+      # Generate audit evidence for compliance and traceability
       - name: Generate Audit Evidence
         run: |
           mkdir -p reports
