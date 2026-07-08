@@ -75,6 +75,62 @@ Every source code change automatically triggers an enterprise DevSecOps pipeline
 
 ---
 
+##  CloudMart DevSecOps CI/CD Pipeline
+
+```mermaid
+flowchart TD
+
+A[ Developer pushes code to Feature Branch] --> B[Stage 1: Unit Testing<br/>Pytest validates application functionality]
+
+B -- Tests Failed --> BLOCK1[🚫 CI Failed<br/>Fix application code]
+
+B -- Tests Passed --> C[Stage 2: Secret Detection<br/>Gitleaks scans for API keys, passwords and tokens]
+
+C -- Secrets Found --> BLOCK2[🚫 Release Blocked<br/>Remove secret and rotate credentials]
+
+C -- No Secrets --> D[Stage 3: Static Application Security Testing<br/>GitHub CodeQL analyses source code]
+
+D -- High Risk Found --> BLOCK3[🚫 Release Blocked<br/>Fix security vulnerabilities]
+
+D -- Passed --> E[Stage 4: Filesystem Vulnerability Scan<br/>Trivy scans project dependencies]
+
+E -- Critical Vulnerability --> BLOCK4[🚫 Release Blocked<br/>Update vulnerable packages]
+
+E -- Passed --> F[Stage 5: Build Docker Image]
+
+F --> G[Stage 6: Container Image Scan<br/>Trivy scans Docker image]
+
+G -- Critical Vulnerability --> BLOCK5[🚫 Release Blocked<br/>Use secure base image]
+
+G -- Passed --> H[Stage 7: Generate Audit Evidence<br/>Commit SHA, Branch, Timestamp]
+
+H --> I[Stage 8: CI Release Gate]
+
+I --> J[Pull Request Review]
+
+J --> K[Merge into Main Branch]
+
+K --> L[Stage 9: Deploy to Development]
+
+L --> M[Generate Deployment Evidence]
+
+M --> N[Manual Approval<br/>GitHub Environment]
+
+N --> O[Stage 10: Deploy to UAT]
+
+O --> P[Generate Deployment Evidence]
+
+P --> Q[Manual Approval<br/>Release Manager]
+
+Q --> R[Stage 11: Deploy to Production]
+
+R --> S[Production Validation]
+
+S --> T[Generate Production Evidence]
+
+T --> U[ Secure Production Release]
+```
+
 # CloudMart Enterprise DevSecOps Architecture
 
 ```
