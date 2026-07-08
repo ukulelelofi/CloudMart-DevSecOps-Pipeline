@@ -75,146 +75,187 @@ Every source code change automatically triggers an enterprise DevSecOps pipeline
 
 ---
 
-```markdown
-#  CloudMart DevSecOps Architecture
+# CloudMart Enterprise DevSecOps Architecture
 
-```text
-┌──────────────────┐
-│    Developer     │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Feature Branch  │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────────────────────────┐
-│          GitHub Actions CI           │
-├──────────────────────────────────────┤
-│  ✓ Pytest Unit Testing               │
-│  ✓ Gitleaks Secret Detection         │
-│  ✓ CodeQL SAST                       │
-│  ✓ Trivy Filesystem Scan             │
-│  ✓ Docker Image Build                │
-│  ✓ Trivy Container Scan              │
-│  ✓ Audit Evidence Artifact           │
-└────────┬─────────────────────────────┘
-         │
-         ▼
-┌──────────────────┐
-│  Pull Request    │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────┐
-│   Main Branch    │
-└────────┬─────────┘
-         │
-         ▼
-┌──────────────────────────────────────┐
-│          GitHub Actions CD           │
-├──────────────────────────────────────┤
-│  Dev  →  UAT  →  Production          │
-│  Evidence generated at every stage   │
-│  Manual approvals before release     │
-└────────┬─────────────────────────────┘
-         │
-         ▼
-┌──────────────────┐
-│ Release Complete │
-└──────────────────┘
+```
+                                 CloudMart DevSecOps Platform
 
-#  DevSecOps Delivery Flow
-
-```text
-Developer
-   │
-   │  Push code to feature branch
-   ▼
-Feature Branch
-   │
-   │  CI pipeline starts automatically
-   ▼
-Continuous Integration
-   │
-   ├── Unit Testing
-   ├── Secret Detection
-   ├── CodeQL SAST
-   ├── Trivy Filesystem Scan
-   ├── Docker Image Build
-   ├── Trivy Container Scan
-   └── Audit Evidence
-   │
-   │  All checks must pass
-   ▼
-Pull Request
-   │
-   │  Review and merge into main
-   ▼
-Main Branch
-   │
-   │  CD pipeline starts automatically
-   ▼
-Continuous Delivery
-   │
-   ├── Deploy to Dev
-   ├── Generate Dev Evidence
-   ├── Manual Approval
-   ├── Deploy to UAT
-   ├── Generate UAT Evidence
-   ├── Manual Approval
-   ├── Deploy to Production
-   └── Generate Production Evidence
-   │
-   ▼
-Release Complete
-
-#  Enterprise DevSecOps Pipeline
-
-```mermaid
-flowchart TD
-
-Developer --> FeatureBranch
-
-FeatureBranch --> Push
-
-Push --> GitHub
-
-GitHub --> GitHubActions
-
-GitHubActions --> UnitTests
-
-UnitTests --> Gitleaks
-
-Gitleaks --> CodeQL
-
-CodeQL --> TrivyFS
-
-TrivyFS --> Docker
-
-Docker --> TrivyImage
-
-TrivyImage --> AuditEvidence
-
-AuditEvidence --> PullRequest
-
-PullRequest --> MergeMain
-
-MergeMain --> CDPipeline
-
-CDPipeline --> Dev
-
-Dev --> Approval1
-
-Approval1 --> UAT
-
-UAT --> Approval2
-
-Approval2 --> Production
+        ┌─────────────────────────────────────────────────────────────┐
+        │                        Developer                            │
+        │         Develop • Commit • Push • Feature Branch            │
+        └──────────────────────────────┬──────────────────────────────┘
+                                       │
+                                       ▼
+                     ┌─────────────────────────────────┐
+                     │        GitHub Repository        │
+                     │ Feature Branch • Pull Request   │
+                     └───────────────┬─────────────────┘
+                                     │
+                                     ▼
+                ┌──────────────────────────────────────────┐
+                │         GitHub Actions CI Pipeline       │
+                ├──────────────────────────────────────────┤
+                │ ✓ Checkout Source Code                   │
+                │ ✓ Install Dependencies                   │
+                │ ✓ Pytest Unit Testing                    │
+                │ ✓ Gitleaks Secret Scan                   │
+                │ ✓ CodeQL Static Analysis (SAST)          │
+                │ ✓ Trivy Filesystem Scan                  │
+                │ ✓ Docker Image Build                     │
+                │ ✓ Trivy Container Image Scan             │
+                │ ✓ Generate Audit Evidence                │
+                │ ✓ Upload Compliance Artifact             │
+                │ ✓ CI Release Gate                        │
+                └───────────────┬──────────────────────────┘
+                                │
+                          Security Passed
+                                │
+                                ▼
+                    ┌──────────────────────────┐
+                    │      Pull Request        │
+                    │ Code Review & Approval   │
+                    └──────────────┬───────────┘
+                                   │
+                                   ▼
+                    ┌──────────────────────────┐
+                    │        Main Branch       │
+                    └──────────────┬───────────┘
+                                   │
+                                   ▼
+                ┌──────────────────────────────────────────┐
+                │         GitHub Actions CD Pipeline       │
+                ├──────────────────────────────────────────┤
+                │ Dev Deployment                           │
+                │ Smoke Test                               │
+                │ Deployment Evidence                      │
+                │                │                         │
+                │                ▼                         │
+                │ UAT (Manual Approval)                    │
+                │ Smoke Test                               │
+                │ Deployment Evidence                      │
+                │                │                         │
+                │                ▼                         │
+                │ Production (Manual Approval)             │
+                │ Production Validation                    │
+                │ Deployment Evidence                      │
+                └───────────────┬──────────────────────────┘
+                                │
+                                ▼
+                    Secure Production Release
 ```
 
----
+#  Security Validation Pipeline
+
+```
+Source Code
+      │
+      ▼
+┌────────────────────────────┐
+│  Unit Testing (Pytest)     │
+└──────────────┬─────────────┘
+               ▼
+┌────────────────────────────┐
+│ Secret Detection           │
+│ Gitleaks                   │
+└──────────────┬─────────────┘
+               ▼
+┌────────────────────────────┐
+│ Static Code Analysis       │
+│ CodeQL (SAST)              │
+└──────────────┬─────────────┘
+               ▼
+┌────────────────────────────┐
+│ Filesystem Scan            │
+│ Trivy                      │
+└──────────────┬─────────────┘
+               ▼
+┌────────────────────────────┐
+│ Docker Image Build         │
+└──────────────┬─────────────┘
+               ▼
+┌────────────────────────────┐
+│ Container Scan             │
+│ Trivy                      │
+└──────────────┬─────────────┘
+               ▼
+┌────────────────────────────┐
+│ Audit Evidence             │
+└──────────────┬─────────────┘
+               ▼
+        Release Gate
+```
+#  Deployment Pipeline
+
+```
+                 Merge to Main
+                       │
+                       ▼
+           GitHub Actions CD Pipeline
+                       │
+        ┌──────────────┴──────────────┐
+        ▼                             ▼
+ Deploy to Dev                 Smoke Test
+        │
+        ▼
+Generate Deployment Evidence
+        │
+        ▼
+══════════════════════════════════════════════
+         Manual Approval (GitHub Environment)
+══════════════════════════════════════════════
+        │
+        ▼
+ Deploy to UAT
+        │
+        ▼
+Generate Deployment Evidence
+        │
+        ▼
+══════════════════════════════════════════════
+      Manual Approval Before Production
+══════════════════════════════════════════════
+        │
+        ▼
+Deploy to Production
+        │
+        ▼
+Production Validation
+        │
+        ▼
+Generate Deployment Evidence
+        │
+        ▼
+Release Completed
+```
+#  Governance, Compliance & Audit
+
+```
+                Governance & Compliance
+
+                ┌───────────────────────┐
+                │ Secure Development     │
+                └───────────┬────────────┘
+                            │
+                            ▼
+                 Automated Security Checks
+                            │
+       ┌──────────────┬──────────────┬──────────────┐
+       ▼              ▼              ▼
+   Gitleaks        CodeQL          Trivy
+       │              │              │
+       └──────────────┼──────────────┘
+                      ▼
+             Audit Evidence Generated
+                      │
+                      ▼
+           Pull Request Review & Approval
+                      │
+                      ▼
+         Controlled Deployment to Production
+                      │
+                      ▼
+              Compliance & Traceability
+```
 
 #  Security Controls
 
