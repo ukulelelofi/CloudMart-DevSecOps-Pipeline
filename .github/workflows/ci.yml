@@ -77,6 +77,9 @@ jobs:
       - name: Build Docker Image
         run: docker build -t cloudmart:${{ github.sha }} .
 
+      # Scan the built Docker image for vulnerabilities.
+      # For demo purposes, findings are reported but do not fail the pipeline.
+      # In production, exit-code should be changed to "1" to block HIGH/CRITICAL vulnerabilities.
       - name: Run Trivy Container Image Scan
         uses: aquasecurity/trivy-action@master
         with:
