@@ -75,8 +75,6 @@ Every source code change automatically triggers an enterprise DevSecOps pipeline
 
 ---
 
-Another fantastic one for README:
-
 ```markdown
 #  CloudMart DevSecOps Architecture
 
