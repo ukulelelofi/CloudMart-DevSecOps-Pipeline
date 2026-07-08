@@ -1,4 +1,12 @@
-name: CloudMart DevSecOps Pipeline
+name: CloudMart CI Pipeline
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches:
+      - "feature/**"
+      - "hotfix/**"
 
 on:
   push:
