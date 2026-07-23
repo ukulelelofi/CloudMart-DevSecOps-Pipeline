@@ -77,6 +77,19 @@ jobs:
       - name: Build Docker Image
         run: docker build -t cloudmart:${{ github.sha }} .
 
+      - name: Run Container Smoke Test
+        run: |
+          docker run -d \
+            --name cloudmart-test \
+            -p 5000:5000 \
+            cloudmart:${{ github.sha }}
+
+          sleep 5
+          curl --fail http://localhost:5000/health
+
+          docker stop cloudmart-test
+          docker rm cloudmart-test
+
       # Scan the built Docker image for vulnerabilities.
       # For demo purposes, findings are reported but do not fail the pipeline.
       # In production, exit-code should be changed to "1" to block HIGH/CRITICAL vulnerabilities.
