@@ -1,0 +1,28 @@
+name: CloudMart Nightly Security Scan
+
+on:
+  schedule:
+    # Runs daily at 02:00 Malaysia time (18:00 UTC)
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nightly-filesystem-scan:
+    name: Nightly Filesystem Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          severity: "HIGH,CRITICAL"
+          exit-code: "0"
